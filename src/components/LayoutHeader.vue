@@ -31,7 +31,7 @@
   border-bottom: 1px solid #ddd;
 }
 .container{
-    width:1200px;
+    max-width:1200px;
     margin:0 auto;
     height:60px;
     display:flex;
