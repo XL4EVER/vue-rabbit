@@ -10,3 +10,4 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+import './styles/index.css'
