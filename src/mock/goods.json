@@ -1,0 +1,18 @@
+[
+  { "id": 1, "categoryId": 1, "icon": "📱", "name": "智能手机 X", "price": 4999 },
+  { "id": 2, "categoryId": 1, "icon": "🎧", "name": "真无线耳机", "price": 399 },
+  { "id": 3, "categoryId": 2, "icon": "🧊", "name": "双门冰箱", "price": 2999 },
+  { "id": 4, "categoryId": 2, "icon": "🌀", "name": "变频空调", "price": 2799 },
+  { "id": 5, "categoryId": 3, "icon": "👕", "name": "纯棉 T 恤", "price": 99 },
+  { "id": 6, "categoryId": 3, "icon": "👟", "name": "轻便跑步鞋", "price": 399 },
+  { "id": 7, "categoryId": 4, "icon": "🍎", "name": "烟台苹果", "price": 39 },
+  { "id": 8, "categoryId": 4, "icon": "🥛", "name": "鲜牛奶", "price": 12 },
+  { "id": 9, "categoryId": 5, "icon": "💄", "name": "口红礼盒", "price": 299 },
+  { "id": 10, "categoryId": 5, "icon": "🧴", "name": "防晒霜", "price": 129 },
+  { "id": 11, "categoryId": 6, "icon": "⛺", "name": "露营帐篷", "price": 699 },
+  { "id": 12, "categoryId": 6, "icon": "🏀", "name": "比赛用篮球", "price": 159 },
+  { "id": 13, "categoryId": 7, "icon": "📚", "name": "前端技术书", "price": 89 },
+  { "id": 14, "categoryId": 7, "icon": "✏️", "name": "钢笔套装", "price": 199 },
+  { "id": 15, "categoryId": 8, "icon": "🧸", "name": "毛绒玩具", "price": 79 },
+  { "id": 16, "categoryId": 8, "icon": "🍼", "name": "奶瓶套装", "price": 149 }
+]

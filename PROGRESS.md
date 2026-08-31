@@ -36,11 +36,18 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
 - 白屏排查三步法：终端 → Console → 错误遮罩
 - 环境排障实录：nvm node_modules 链接丢失（手动 mklink 修复 + 开"开发人员模式"治本）
 
-### 🔜 阶段 2（下次开始）：分类页 + Mock 数据
+### 🔄 阶段 2（进行中）：分类页 + Mock 数据
 
-- Category 页：动态路由参数 useRoute（:id 实战）、Mock JSON 数据导入
-- SubCategory 页：二级分类筛选
-- 知识点：computed 计算属性、Promise 模拟异步（为 axios 打基础）、JSON 处理
+**已完成**：
+- 首页分类跳转：useRouter 编程式导航（router.push 模板字符串拼路径）
+- Category 页：useRoute 读取 :id、Number() 字符串转数字（路由参数永远是字符串！）、
+  find/filter 数组方法、JSON 导入（src/mock/categories.json + goods.json，Vite 原生支持）、
+  v-if/v-else 数据兜底（访问不存在的分类显示"分类不存在"）
+
+**下次继续**：
+- Promise 模拟异步 + onMounted 生命周期 + loading 状态（为 axios 打基础）
+- computed 计算属性 + SubCategory 二级分类页
+- 重构：把重复的商品卡片抽成公共组件 GoodsCard（DRY 原则）
 
 ## 常用命令速查
 

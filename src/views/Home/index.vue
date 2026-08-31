@@ -6,7 +6,7 @@
         v-for="c in categories"
         :key="c.id"
         :class="{ active: currentId === c.id }"
-        @click="currentId = c.id"
+        @click="goCategory(c)"
       >
         {{ c.name }}
       </li>
@@ -49,6 +49,13 @@
 
 <script setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router=useRouter();
+function goCategory(c){
+  currentId.value=c.id;
+  router.push(`/category/${c.id}`);
+}
 
 defineOptions({
   name: "HomeIndex",
@@ -69,17 +76,17 @@ const currentId = ref(1); // 当前选中的分类 id
 
 // Banner 数据：3 张"图"先用渐变背景块代替，避免外链图片失效
 const banners = ref([
-  { id: 1, text: "新品首发 5 折起", from: "#ffd2a0", to: "#ff9a62" },
-  { id: 2, text: "开学季 数码狂欢", from: "#e0c3fc", to: "#8ec5fc"},
+  { id: 1, text: "罐罐首发 5 折起", from: "#ffd2a0", to: "#ff9a62" },
+  { id: 2, text: "开饭季 肚肚狂欢", from: "#e0c3fc", to: "#8ec5fc"},
   { id: 3, text: "秋季上新 满 300 减 50", from: "#a0e8ff", to: "#62b4ff" },
 ]);
 const current = ref(0); // 当前显示的 Banner 下标（从 0 开始数，数组下标知识）
 const goods = ref([
-  { id: 1, icon: '🎧', name: '真无线蓝牙耳机', price: 399 },
-  { id: 2, icon: '⌨️', name: '机械键盘 87 键', price: 299 },
-  { id: 3, icon: '⌚', name: '智能手表 Pro', price: 1299 },
-  { id: 4, icon: '🔊', name: '便携蓝牙音箱', price: 199 },
-  { id: 5, icon: '🖥️', name: '4K 高清显示器', price: 1899 }
+  { id: 1, icon: '🎧', name: 'Airpods Max', price: 3999 },
+  { id: 2, icon: '⌨️', name: '妙控键盘', price: 2199 },
+  { id: 3, icon: '⌚', name: 'AppleWatch s11', price: 2999 },
+  { id: 4, icon: '🔊', name: 'HomePod', price: 2699 },
+  { id: 5, icon: '🖥️', name: 'Studio Display', price: 21999 }
 ])
 </script>
 
