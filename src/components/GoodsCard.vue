@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" @click="emit('click', goods)">
     <div class="card-img">{{ goods.icon }}</div>
     <div class="card-name">{{ goods.name }}</div>
     <div class="card-price">¥{{ goods.price }}</div>
@@ -13,6 +13,7 @@ defineProps({
     required: true
   }
 })
+const emit = defineEmits(['click'])
 </script>
 
 <style scoped>

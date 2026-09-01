@@ -7,7 +7,7 @@
         <p class="count" v-if="!loading" >共 {{ categoryGoods.length }} 个商品</p>
         <div v-if="loading" class="loading">加载中…</div>
         <div v-else class="goods-grid">
-          <GoodsCard v-for="g in categoryGoods" :key="g.id" :goods="g" />                   
+          <GoodsCard v-for="g in categoryGoods" :key="g.id" :goods="g" @click="goDetail(g)" />
         </div>                  
       </div>                          
 
@@ -21,12 +21,13 @@ defineOptions({
 })
 
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import categories from '@/mock/categories.json'
 import { getGoodsByCategory } from '@/apis/goods'
 import GoodsCard from '@/components/GoodsCard.vue'
 
 const route = useRoute()
+const router = useRouter()
 const categoryId = Number(route.params.id)   // ⚠️ 字符串转数字
 
 // find：找"第一个满足条件"的元素 → 当前分类对象
@@ -35,6 +36,9 @@ const currentCategory = categories.find(c => c.id === categoryId)
 // filter：筛出"所有满足条件"的元素 → 该分类下的商品数组
 const categoryGoods = ref([])
 const loading=ref(true)
+function goDetail(g) {
+  router.push(`/detail/${g.id}`)
+}
 onMounted(async () => {
   categoryGoods.value = await getGoodsByCategory(categoryId)
   loading.value = false

@@ -7,3 +7,10 @@ export function getGoodsByCategory(categoryId) {
     }, 500);
   });
 }
+export function getGoodsById(id) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(goods.find((g) => g.id === id));   // find：找不到返回 undefined
+    }, 500);
+  });
+}

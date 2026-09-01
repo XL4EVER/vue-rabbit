@@ -18,7 +18,7 @@
       <div v-if="loading" class="loading">加载中…</div>
       <div v-else class="goods-grid">
         <!-- 注意：遍历的是 computed 的结果 filteredGoods，不是原始 goods -->
-        <GoodsCard v-for="g in filteredGoods" :key="g.id" :goods="g" />
+        <GoodsCard v-for="g in filteredGoods" :key="g.id" :goods="g" @click="goDetail(g)" />
       </div>
     </div>
 
@@ -28,12 +28,14 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import categories from '@/mock/categories.json'
 import { getGoodsByCategory } from '@/apis/goods'
 import GoodsCard from '@/components/GoodsCard.vue' 
 
+
 const route = useRoute()
+const router = useRouter()
 const categoryId = Number(route.params.id)
 const currentCategory = categories.find(c => c.id === categoryId)
 
@@ -44,6 +46,9 @@ onMounted(async () => {
   goods.value = await getGoodsByCategory(categoryId)
   loading.value = false
 })
+function goDetail(g) {
+  router.push(`/detail/${g.id}`)
+}
 
 // 各分类的档位配置表（key = 分类 id，没配置的分类走 defaultTabs）
 const rangeMap = {

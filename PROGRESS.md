@@ -55,10 +55,23 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
 - DRY 原则落地：重复的卡片代码抽成组件，一处修改处处生效（重构后外观不变）
 - 排错实录：组件文件名与 import 不一致 → 解析失败白屏（Vite 按文件名精确匹配）
 
-**下次继续（阶段 3）**：
-- 商品详情页 Detail：点击卡片跳转、动态路由复用
-- 组件通信第二课：自定义事件（子传父）
-- Mock 数据扩充（商品增加 description 等字段）
+### 🔄 阶段 3（进行中）：商品详情页
+
+**已完成（第一课）**：
+- 点击卡片跳转详情：$emit 自定义事件（子传父）——props + emit 构成组件通信闭环；
+  emit 第二参数携带数据（事件 payload）
+- Detail 详情页：动态路由复用 /detail/:id、getGoodsById（find 找不到返回 undefined 兜底）、
+  三态渲染 v-if / v-else-if / v-else、loading 防「商品不存在」闪现
+- 单一数据源原则：首页推荐商品改为从接口层取（消灭首页写死数据与 mock 的两份拷贝）
+- Mock 数据扩充：商品增加 brand / description 字段
+- 轮播图补全：setInterval 自动轮播（% 取模循环）、onUnmounted 清理定时器、
+  mouseenter / mouseleave 悬停暂停（启动逻辑抽函数复用）
+- 排错实录：Failed to resolve component 警告（import 丢失）、
+  同一模块重复 import 报错、漏写 loading.value = false 导致状态卡死、
+  script 中 ref 必须 .value（模板才自动解包）
+
+**下次继续（阶段 3 第二课）**：
+- 详情页购物交互：v-model 双向绑定 + 数量选择器 + 加入购物车按钮（为 Pinia 预热）
 
 ## 常用命令速查
 
@@ -85,3 +98,9 @@ git log --oneline  # 查看提交历史
 > （数据层 + 接口层）配合 Promise 模拟异步请求，结合 onMounted 与 loading
 > 状态管理；使用 computed 响应式实现价格区间筛选，并将商品卡片抽成公共组件
 > 在三处复用，通过 props 实现父传子通信（单向数据流），遵循 DRY 原则。
+>
+> 商品详情模块通过自定义事件（$emit）实现子组件向父组件传递点击事件并携带
+> 商品数据，结合动态路由跳转至详情页；页面采用三态渲染（加载中/有数据/
+> 不存在）兜底异常情况，并遵循单一数据源原则统一从 Mock 接口层取数；轮播图
+> 使用 setInterval 定时器实现自动播放与鼠标悬停暂停，在组件销毁时通过
+> onUnmounted 清理定时器，防止内存泄漏。

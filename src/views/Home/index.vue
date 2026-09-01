@@ -11,7 +11,7 @@
         {{ c.name }}
       </li>
     </ul>
-    <div class="banner">
+    <div class="banner" @mouseenter="stopCarousel" @mouseleave="startCarousel">
       <!-- 3 个渐变块，只有 current === i 的显示 -->
       <div
         class="banner-item"
@@ -37,21 +37,26 @@
 <div class="goods">
   <h2>热门推荐</h2>
   <div class="goods-grid">
-    <GoodsCard v-for="g in goods" :key="g.id" :goods="g" />
+    <GoodsCard v-for="g in goods" :key="g.id" :goods="g" @click="goDetail(g)" />
   </div>
 </div>
 
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import GoodsCard from '@/components/GoodsCard.vue'; 
+import { getGoodsByCategory } from '@/apis/goods'
+import GoodsCard from '@/components/GoodsCard.vue'
+
 
 const router=useRouter();
 function goCategory(c){
   currentId.value=c.id;
   router.push(`/category/${c.id}`);
+}
+function goDetail(g) {
+  router.push(`/detail/${g.id}`)
 }
 
 defineOptions({
@@ -78,13 +83,32 @@ const banners = ref([
   { id: 3, text: "秋季上新 满 300 减 50", from: "#a0e8ff", to: "#62b4ff" },
 ]);
 const current = ref(0); // 当前显示的 Banner 下标（从 0 开始数，数组下标知识）
-const goods = ref([
-  { id: 1, icon: '🎧', name: 'Airpods Max', price: 3999 },
-  { id: 2, icon: '⌨️', name: '妙控键盘', price: 2199 },
-  { id: 3, icon: '⌚', name: 'AppleWatch s11', price: 2999 },
-  { id: 4, icon: '🔊', name: 'HomePod', price: 2699 },
-  { id: 5, icon: '🖥️', name: 'Studio Display', price: 21999 }
-])
+const goods = ref([])
+let timer = null
+
+// 启动轮播：挂载时和鼠标移出时都要用 → 抽成函数复用
+function startCarousel() {
+  timer = setInterval(() => {
+    current.value = (current.value + 1) % banners.value.length
+  }, 2000)
+}
+
+// 暂停轮播：清掉定时器就是暂停
+function stopCarousel() {
+  clearInterval(timer)
+}
+
+onMounted(async () => {
+  const digitalGoods = await getGoodsByCategory(1)  // 数码产品分类
+  goods.value = digitalGoods.slice(0, 5)            // 截取前 5 个上推荐位
+  startCarousel()   // ← 原来那两行 setInterval 换成这一句
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
+
+
 </script>
 
 <style scoped>
