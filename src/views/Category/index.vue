@@ -1,14 +1,13 @@
 <template>
     <div class="category-page">
       <div v-if="currentCategory">
-        <h2>{{ currentCategory.name }}</h2>
-        <p class="count">共 {{ categoryGoods.length }} 个商品</p>
-        <div class="goods-grid">
-          <div class="card" v-for="g in categoryGoods" :key="g.id">
-            <div class="card-img">{{ g.icon }}</div>
-            <div class="card-name">{{ g.name }}</div>
-            <div class="card-price">¥{{ g.price }}</div>
-          </div>                     
+        <h2>{{ currentCategory.name }}
+          <router-link class="filter-link" :to="`/sub-category/${categoryId}`">高级筛选 →</router-link>
+        </h2>
+        <p class="count" v-if="!loading" >共 {{ categoryGoods.length }} 个商品</p>
+        <div v-if="loading" class="loading">加载中…</div>
+        <div v-else class="goods-grid">
+          <GoodsCard v-for="g in categoryGoods" :key="g.id" :goods="g" />                   
         </div>                  
       </div>                          
 
@@ -21,9 +20,11 @@ defineOptions({
   name: 'CategoryPage',
 })
 
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import categories from '@/mock/categories.json'
-import goods from '@/mock/goods.json'
+import { getGoodsByCategory } from '@/apis/goods'
+import GoodsCard from '@/components/GoodsCard.vue'
 
 const route = useRoute()
 const categoryId = Number(route.params.id)   // ⚠️ 字符串转数字
@@ -32,7 +33,12 @@ const categoryId = Number(route.params.id)   // ⚠️ 字符串转数字
 const currentCategory = categories.find(c => c.id === categoryId)
 
 // filter：筛出"所有满足条件"的元素 → 该分类下的商品数组
-const categoryGoods = goods.filter(g => g.categoryId === categoryId)
+const categoryGoods = ref([])
+const loading=ref(true)
+onMounted(async () => {
+  categoryGoods.value = await getGoodsByCategory(categoryId)
+  loading.value = false
+})
 </script>
 
 <style scoped>
@@ -59,43 +65,21 @@ h2 {
   grid-template-columns: repeat(5, 1fr);
   gap: 20px;
 }
-
-.card {
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  transition: all 0.3s;
-  overflow: hidden;
-  background: #fff;
-}
-
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: translateY(-4px);
-}
-
-.card-img {
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  font-size: 48px;
-}
-
-.card-name {
-  font-weight: bold;
-  padding: 8px 12px;
-}
-
-.card-price {
-  color: var(--brand-color);
-  font-weight: bold;
-  padding: 0 12px 12px;
-}
-
 .empty {
   padding: 60px 0;
   text-align: center;
   color: #999;
+}
+.loading {
+  padding: 60px 0;
+  text-align: center;
+  color: #999;
+}
+.filter-link {
+  float: right;
+  font-size: 14px;
+  font-weight:normal;
+  color: var(--brand-color);
+  text-decoration: none;
 }
 </style>

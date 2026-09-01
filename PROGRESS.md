@@ -36,18 +36,29 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
 - 白屏排查三步法：终端 → Console → 错误遮罩
 - 环境排障实录：nvm node_modules 链接丢失（手动 mklink 修复 + 开"开发人员模式"治本）
 
-### 🔄 阶段 2（进行中）：分类页 + Mock 数据
+### ✅ 阶段 2（已完成）：分类页 + Mock 数据
 
-**已完成**：
-- 首页分类跳转：useRouter 编程式导航（router.push 模板字符串拼路径）
-- Category 页：useRoute 读取 :id、Number() 字符串转数字（路由参数永远是字符串！）、
-  find/filter 数组方法、JSON 导入（src/mock/categories.json + goods.json，Vite 原生支持）、
-  v-if/v-else 数据兜底（访问不存在的分类显示"分类不存在"）
+**功能**：
+- Category 分类页：动态路由 /category/:id、商品网格、加载状态、不存在兜底
+- SubCategory 二级分类页：价格区间筛选（全部 / 100元以下 / 100-500元 / 500元以上）
+- 商品卡片抽成公共组件 GoodsCard：首页 / 分类页 / 筛选页三处复用
 
-**下次继续**：
-- Promise 模拟异步 + onMounted 生命周期 + loading 状态（为 axios 打基础）
-- computed 计算属性 + SubCategory 二级分类页
-- 重构：把重复的商品卡片抽成公共组件 GoodsCard（DRY 原则）
+**知识点**：
+- 路由进阶：动态路由 :id、useRoute（读参数）vs useRouter（跳转）、
+  编程式导航 router.push 模板字符串、路由参数永远是字符串（Number() 转换）
+- Mock 分层：src/mock/*.json（Vite 原生 JSON 导入）+ src/apis 接口层（为换真实后端留口）
+- find/filter 数组方法、Promise + setTimeout 模拟异步、async/await、
+  onMounted 生命周期、loading 状态（为 axios 打基础）
+- computed 计算属性：缓存派生数据，依赖一变自动重算（筛选即改即生效）
+- 组件通信第一课：props 父传子、defineProps 类型校验（type/required）、
+  单向数据流（子组件不能改 props，数据在哪定义就在哪修改）
+- DRY 原则落地：重复的卡片代码抽成组件，一处修改处处生效（重构后外观不变）
+- 排错实录：组件文件名与 import 不一致 → 解析失败白屏（Vite 按文件名精确匹配）
+
+**下次继续（阶段 3）**：
+- 商品详情页 Detail：点击卡片跳转、动态路由复用
+- 组件通信第二课：自定义事件（子传父）
+- Mock 数据扩充（商品增加 description 等字段）
 
 ## 常用命令速查
 
@@ -69,3 +80,8 @@ git log --oneline  # 查看提交历史
 > 响应式数据驱动（:class、v-show）。使用 Pinia 进行购物车状态管理。开发过程
 > 使用 Git 进行规范化版本管理（Conventional Commits），并独立排查解决了
 > Node 环境（nvm）的链接损坏问题。
+>
+> 商品模块使用动态路由与 useRoute/useRouter 实现分类页跳转，采用 Mock 分层
+> （数据层 + 接口层）配合 Promise 模拟异步请求，结合 onMounted 与 loading
+> 状态管理；使用 computed 响应式实现价格区间筛选，并将商品卡片抽成公共组件
+> 在三处复用，通过 props 实现父传子通信（单向数据流），遵循 DRY 原则。

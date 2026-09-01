@@ -37,11 +37,7 @@
 <div class="goods">
   <h2>热门推荐</h2>
   <div class="goods-grid">
-    <div class="card" v-for="g in goods" :key="g.id">
-      <div class="card-img">{{ g.icon }}</div>
-      <div class="card-name">{{ g.name }}</div>
-      <div class="card-price">¥{{ g.price }}</div>
-    </div>
+    <GoodsCard v-for="g in goods" :key="g.id" :goods="g" />
   </div>
 </div>
 
@@ -50,6 +46,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import GoodsCard from '@/components/GoodsCard.vue'; 
 
 const router=useRouter();
 function goCategory(c){
@@ -165,32 +162,5 @@ h2{
   display: grid;                            /* ① 开启网格 */
   grid-template-columns: repeat(5, 1fr);    /* ② 5 列，每列等宽 */
   gap: 20px;                                /* ③ 格子间距（行列同时生效） */
-}
-.card{
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  transition: all 0.3s;
-  overflow: hidden;
-}
-.card:hover{
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-4px);
-}
-.card-img{
-  height:150px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#f5f5f5;
-  font-size:48px;
-}
-.card-name{
-  font-weight:bold;
-  padding:8px 12px;
-}
-.card-price{
-  color:var(--brand-color);
-  font-weight:bold;
-  padding:0 12px 12px;
 }
 </style>
