@@ -45,17 +45,37 @@ onMounted(async () => {
   loading.value = false
 })
 
-// 筛选标签数据
-const tabs = ['全部', '100元以下', '100-500元', '500元以上']
+// 各分类的档位配置表（key = 分类 id，没配置的分类走 defaultTabs）
+const rangeMap = {
+  1: ['全部', '3000元以下', '3000-10000元', '10000元以上'],   // 手机数码：单价高
+  2: ['全部', '1000元以下', '1000-3000元', '3000元以上'],     // 家用电器
+}
+const defaultTabs = ['全部', '100元以下', '100-500元', '500元以上']
+const tabs = computed(() => rangeMap[categoryId] || defaultTabs)
 const activeTab = ref('全部')
 
 // 核心：computed 派生数据——activeTab 一变，filteredGoods 自动重算
 const filteredGoods = computed(() => {
   const list = goods.value
-  if (activeTab.value === '100元以下') return list.filter(g => g.price < 100)
-  if (activeTab.value === '100-500元') return list.filter(g => g.price >= 100 && g.price <= 500)
-  if (activeTab.value === '500元以上') return list.filter(g => g.price > 500)
-  return list   // '全部' 时原样返回
+  const label = activeTab.value
+  if (label === '全部') return list   // '全部' 时原样返回
+
+  // 通用解析：从标签文字里提取价格区间 min / max
+  let min = 0
+  let max = Infinity
+
+  if (label.includes('-')) {
+    // '3000-10000元' → 拆成 ['3000', '10000元'] 再转数字
+    const parts = label.split('-')
+    min = Number(parts[0])
+    max = Number(parts[1].replace('元', ''))
+  } else if (label.includes('以下')) {
+    max = Number(label.replace('元以下', ''))    // '3000元以下' → 3000
+  } else if (label.includes('以上')) {
+    min = Number(label.replace('元以上', ''))    // '10000元以上' → 10000
+  }
+
+  return list.filter(g => g.price >= min && g.price <= max)
 })
 </script>
 

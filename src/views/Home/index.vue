@@ -60,7 +60,7 @@ defineOptions({
 
 // 分类数据（后面阶段会改成从接口拿，现在先写死——Mock 思想的第一步）
 const categories = ref([
-  { id: 1, name: "手机数码" },
+  { id: 1, name: "数码产品" },
   { id: 2, name: "家用电器" },
   { id: 3, name: "服装鞋包" },
   { id: 4, name: "食品生鲜" },
@@ -69,7 +69,7 @@ const categories = ref([
   { id: 7, name: "图书文具" },
   { id: 8, name: "母婴玩具" },
 ]);
-const currentId = ref(1); // 当前选中的分类 id
+const currentId = ref(null); // 当前选中的分类 id
 
 // Banner 数据：3 张"图"先用渐变背景块代替，避免外链图片失效
 const banners = ref([
