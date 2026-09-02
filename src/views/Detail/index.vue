@@ -8,6 +8,17 @@
         <p class="detail-price">¥{{ currentGoods.price }}</p>
         <p class="detail-brand">{{ currentGoods.brand }}</p>
         <p class="detail-desc">{{ currentGoods.description }}</p>
+        <div class="buy-box">
+          <!-- 数量步进器 -->
+          <div class="count-box">
+            <button :disabled="count <= 1" @click="count--">−</button>
+            <input v-model.number="count" />
+            <button @click="count++">+</button>
+          </div>
+          <button class="buy-btn" @click="addToCart">加入购物车</button>
+        </div>
+        <p v-show="tipVisible" class="cart-tip">已加入购物车：{{ currentGoods.name }} × {{ count }}
+       </p>
       </div>
     </div>
 
@@ -29,6 +40,19 @@ onMounted(async () => {
   currentGoods.value = await getGoodsById(goodsId)  // 找不到 → undefined → v-else 兜底
   loading.value = false
 })
+const count = ref(1)              // 购买数量，初始 1 件
+const tipVisible = ref(false)     // 「已加入」提示条的显示状态
+
+function addToCart() {
+  if(count.value<1){
+    count.value=1
+  }
+  tipVisible.value = true
+  setTimeout(() => {
+    tipVisible.value = false      // 2 秒后自动隐藏
+  }, 2000)
+}
+
 </script>
 
 
@@ -91,5 +115,63 @@ onMounted(async () => {
   padding: 60px 0;
   text-align: center;
   color: #999;
+}
+.buy-box{
+  display:flex;
+  gap:16px;
+  margin-top:30px;
+}
+.count-box{
+  display:flex;
+  border:1px solid var(--brand-color);
+  border-radius:6px;
+  overflow:hidden;
+}
+.count-box button{
+  width:40px;
+  height:40px;
+  border:none;
+  background:#f5f5f5;
+  font-size:18px;
+  cursor:pointer;
+  box-sizing:border-box;
+  padding:0;
+}
+.count-box button:hover{
+  background:#eee;
+}
+.count-box button:disabled{
+  color:#ccc;
+  cursor:not-allowed;
+}
+.count-box input{
+  box-sizing:border-box;
+  padding:0;
+  width:50px;
+  height:40px;
+  border:none;
+  text-align:center;
+  font-size:16px;
+}
+.count-box input:focus{
+  outline:none;
+}
+.buy-btn{
+  background:var(--brand-color);
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  padding:0 28px;
+  font-size:16px;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+.buy-btn:hover{
+  opacity:0.85;
+}
+.cart-tip{
+  margin-top:12px;
+  color:var(--brand-color);
+  font-size:14px;
 }
 </style>

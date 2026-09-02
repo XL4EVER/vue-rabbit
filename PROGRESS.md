@@ -55,7 +55,7 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
 - DRY 原则落地：重复的卡片代码抽成组件，一处修改处处生效（重构后外观不变）
 - 排错实录：组件文件名与 import 不一致 → 解析失败白屏（Vite 按文件名精确匹配）
 
-### 🔄 阶段 3（进行中）：商品详情页
+### ✅ 阶段 3（已完成）：商品详情页
 
 **已完成（第一课）**：
 - 点击卡片跳转详情：$emit 自定义事件（子传父）——props + emit 构成组件通信闭环；
@@ -70,8 +70,18 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
   同一模块重复 import 报错、漏写 loading.value = false 导致状态卡死、
   script 中 ref 必须 .value（模板才自动解包）
 
-**下次继续（阶段 3 第二课）**：
-- 详情页购物交互：v-model 双向绑定 + 数量选择器 + 加入购物车按钮（为 Pinia 预热）
+**已完成（第二课）**：
+- v-model 双向绑定（语法糖 = :value + @input）、.number 修饰符（input 输入是字符串的坑）
+- 数量步进器：:disabled 边界控制（count <= 1）、count-- / count++ 自增减
+- 加入购物车占位：提交前数据校验（count < 1 修正为 1）、setTimeout 一次性定时器、
+  v-show 提示条（为阶段 5 Pinia 真正落库留口）
+- CSS 排错实录：box-sizing: border-box + padding: 0 清除按钮默认内边距、
+  :disabled / :hover 伪类必须加在"会被禁用"的元素上（.count-box:disabled 永远不命中）、
+  浏览器原生 disabled 样式会伪装成自己的 CSS——F12 Styles 面板验证规则命中
+
+**下次继续（阶段 4）**：
+- 登录页：安装 axios + 请求封装、v-model 表单 + 校验、token 存 localStorage、
+  登录状态守卫（为购物车做准备）
 
 ## 常用命令速查
 
@@ -104,3 +114,8 @@ git log --oneline  # 查看提交历史
 > 不存在）兜底异常情况，并遵循单一数据源原则统一从 Mock 接口层取数；轮播图
 > 使用 setInterval 定时器实现自动播放与鼠标悬停暂停，在组件销毁时通过
 > onUnmounted 清理定时器，防止内存泄漏。
+>
+> 详情页购买交互使用 v-model 实现数量选择器的双向绑定（配合 .number 修饰符
+> 与 :disabled 边界控制），并在提交前对用户输入做数据校验；通过 setTimeout
+> 与 v-show 实现加入购物车的即时反馈；CSS 层面使用 box-sizing 统一盒模型，
+> 通过 :disabled / :hover 伪类提供交互状态反馈。
