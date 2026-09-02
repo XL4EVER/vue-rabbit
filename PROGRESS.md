@@ -5,7 +5,7 @@
 
 ## 技术栈
 
-Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
+Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
 
 ## 当前进度
 
@@ -79,9 +79,46 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios（待装）
   :disabled / :hover 伪类必须加在"会被禁用"的元素上（.count-box:disabled 永远不命中）、
   浏览器原生 disabled 样式会伪装成自己的 CSS——F12 Styles 面板验证规则命中
 
-**下次继续（阶段 4）**：
-- 登录页：安装 axios + 请求封装、v-model 表单 + 校验、token 存 localStorage、
-  登录状态守卫（为购物车做准备）
+### ✅ 阶段 4（已完成）：登录页 + 登录状态
+
+**功能**：
+- 安装 axios + 请求封装：实例（baseURL/timeout）+ 请求拦截器（自动带 token）
+  + 响应拦截器（剥壳取数据、统一错误文案）
+- 登录 Mock 接口：自定义 axios adapter 充当假服务器（method+url 查表、模拟延迟），
+  账号密码校验，按业务状态码约定（code 1 成功 / 0 失败）返回
+- 登录页：reactive 表单 + 提交校验（非空/长度）、@submit.prevent、
+  try/catch/finally、token/nickname 落 localStorage、router.replace 跳转
+- 登录状态守卫：beforeEach 全局前置守卫 + meta.requiresAuth 标记，
+  未登录踢去登录页并用 ?redirect= 记来路，登录后跳回原页面
+- 页头登录态：两段式页头（顶部工具条 + 主行）、欢迎语/退出、购物车胶囊按钮、
+  搜索按钮胶囊化、logo 换幼圆字体
+- 购物车占位页 /cart（阶段 5 做真购物车）
+
+**知识点**：
+- axios：create 实例、拦截器（中间件思想）、自定义 adapter（替换网络层）、
+  业务状态码 vs HTTP 状态码
+- reactive vs ref（一组相关字段 vs 单个值）、@submit.prevent（阻止表单默认刷新）、
+  try/catch/finally（复位逻辑放 finally）、router.replace vs push（不留历史记录）
+- 路由守卫：beforeEach（to/from、返回值三态：true / 路径 / {path,query}）、
+  meta 路由元信息、to.fullPath 含查询参数
+- 组件内登录态：ref 包 getStorage（普通值不响应，退出后界面不更新的坑）
+- 布局与样式：两段式页头、写死高度溢出（内容变多要由内容撑开）、body 默认 margin 清零、
+  胶囊按钮（margin 留缝 + padding 减法）、font-family 回退链、幼圆仿粗（text-shadow）、
+  @font-face / 字体版权意识（免费可商用）
+- 排错实录：mockAdapters 文件名多 s 与 import 不一致（阶段 2 老坑再现）、
+  axios 1.x 自定义 adapter 不拼 baseURL（config.url 是原始相对路径、method 是小写）
+  ——讲课结论要实测验证；.header 写死 60px 高度溢出（border 贯穿主行）；
+  body 默认 8px margin 因工具条变灰而现形（旧 bug 现形）
+
+**下次继续（阶段 5）**：
+- Pinia 购物车：cart store 骨架已就位（items/totalCount/totalPrice/addItem 等），
+  详情页「加入购物车」接入真 store、购物车页（列表/数量增减/删除/结算）、
+  页头徽标接真实数量、登录态升级为全局 store（解决组件各自读 storage 的局限）
+
+**遗留事项**（择日处理）：
+- lint 7 个历史报错（index.vue 多词命名 + .eslintrc.cjs no-undef），需改 eslint 配置
+- 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
+- 全局样式大重置（* margin/padding/box-sizing）需全站过一遍视觉
 
 ## 常用命令速查
 
@@ -119,3 +156,13 @@ git log --oneline  # 查看提交历史
 > 与 :disabled 边界控制），并在提交前对用户输入做数据校验；通过 setTimeout
 > 与 v-show 实现加入购物车的即时反馈；CSS 层面使用 box-sizing 统一盒模型，
 > 通过 :disabled / :hover 伪类提供交互状态反馈。
+>
+> 登录模块使用 axios 进行请求封装：通过 axios.create 创建带 baseURL 与超时的
+> 实例，请求拦截器统一携带 token（Authorization: Bearer），响应拦截器统一
+> 处理业务状态码与错误文案；开发阶段通过自定义 axios adapter 充当 Mock 假
+> 服务器（按 method+url 查表返回数据并模拟延迟），切换真实后端时仅需删除
+> 一行配置。登录页使用 reactive 管理表单数据，提交前做非空与长度校验，
+> 登录成功后 token 存入 localStorage 并用 router.replace 跳转；路由层通过
+> 全局前置守卫 beforeEach 结合 meta 元信息实现登录状态守卫，未登录访问受
+> 保护页面时重定向到登录页，同时用 query 参数记录来路，登录成功后跳回原
+> 页面，形成完整闭环。
