@@ -1,18 +1,22 @@
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getStorage, removeStorage } from '@/utils/storage'
+import { useCartStore } from '@/stores/cart'
+import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
 
-// 登录态：ref 包一层，退出后界面才能立即更新（阶段 5 学 Pinia 后改为全局 store）
-const nickname = ref(getStorage('nickname'))
+const userStore = useUserStore()
+const { nickname } = storeToRefs(userStore)   // 数据用 storeToRefs（第二课学的）
+
+const cartStore = useCartStore()
+
+
 const router = useRouter()
 
 function logout() {
-  removeStorage('token')
-  removeStorage('nickname')
-  nickname.value = ''      // 清本地状态，界面立即回到未登录
-  router.push('/')
+  userStore.logout()       // 数据怎么清由 store 说了算
+  router.push('/')         // 页面跳转是自己的事，留在组件里
 }
+
 </script>
 
 <template>
@@ -21,7 +25,7 @@ function logout() {
     <div class="topbar">
       <div class="container">
         <div class="user">
-          <router-link v-if="!nickname" to="/login">请先登录</router-link>
+          <router-link v-if="!nickname" to="/login">请先登录</router-link>          
           <template v-else>
             <span>你好，{{ nickname }}</span>
             <a class="logout" @click="logout">退出</a>
@@ -46,8 +50,11 @@ function logout() {
         <button>搜索</button>
       </div>
 
-      <!-- 购物车入口：数量徽标暂时写死，阶段 5 接入 Pinia 后变成活的 -->
-      <router-link class="cart" to="/cart">🛒 购物车</router-link>
+      <!-- 购物车入口：徽标实时显示 cart store 的商品总数 -->
+      <router-link class="cart" to="/cart">
+        🛒 购物车
+        <span v-if="cartStore.totalCount > 0" class="cart-badge">{{ cartStore.totalCount }}</span>
+      </router-link>
     </div>
   </header>
 </template>
@@ -125,6 +132,22 @@ function logout() {
   font-size:14px;
   text-decoration:none;      /* router-link 渲染成 a，去掉默认下划线 */
   transition:all 0.3s;
+  position:relative;  
+}
+.cart-badge{
+  position:absolute;
+  top:-6px;
+  right:-8px;             /* 冒出一半在胶囊右上角外 */
+  min-width:16px;
+  height:16px;
+  padding:0 4px;
+  border-radius:8px;      /* 胶囊一半高度 = 小圆角徽标 */
+  background:#e4393c;     /* 电商红，和品牌金区分开，数量才有「提醒」感 */
+  color:#fff;
+  font-size:12px;
+  line-height:16px;       /* 行高=高度，单行文字垂直居中 */
+  text-align:center;
+  box-sizing:border-box;
 }
 .cart:hover{
   background:var(--brand-color);

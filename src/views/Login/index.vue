@@ -38,7 +38,10 @@
 import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { loginApi } from '@/apis/user'
-import { setStorage } from '@/utils/storage'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+
 
 const form = reactive({ account: '', password: '' })   // 表单数据
 const errors = reactive({ account: '', password: '' }) // 字段错误提示（空串 = 无错）
@@ -71,8 +74,7 @@ async function onSubmit() {
   try {
     // 成功：loginApi 返回 { token, nickname }（两层壳已在拦截器剥掉）
     const user = await loginApi({ account: form.account, password: form.password })
-    setStorage('token', user.token)          // 登录凭证落 localStorage
-    setStorage('nickname', user.nickname)    // 昵称也存一份，页头要显示
+    userStore.setLogin(user)
     router.replace(route.query.redirect || '/')  // 跳回「来路」，没有来路就回首页
   } catch (msg) {
     submitError.value = msg   // 「账号或密码错误」

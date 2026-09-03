@@ -30,6 +30,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getGoodsById } from '@/apis/goods'
+import { useCartStore } from '@/stores/cart'
 
 const route = useRoute()
 const goodsId = Number(route.params.id)   // 老朋友：字符串转数字
@@ -42,14 +43,17 @@ onMounted(async () => {
 })
 const count = ref(1)              // 购买数量，初始 1 件
 const tipVisible = ref(false)     // 「已加入」提示条的显示状态
+const cartStore = useCartStore()  // 获取购物车 Store 实例
 
 function addToCart() {
-  if(count.value<1){
-    count.value=1
+  if (count.value < 1) {
+    count.value = 1
   }
+  // 把商品数据（展开 + 数量）交给全局 store——原来只是 setTimeout 假提示，现在真落库
+  cartStore.addItem({ ...currentGoods.value, count: count.value })
   tipVisible.value = true
   setTimeout(() => {
-    tipVisible.value = false      // 2 秒后自动隐藏
+    tipVisible.value = false
   }, 2000)
 }
 
