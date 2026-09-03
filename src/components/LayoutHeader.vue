@@ -1,8 +1,12 @@
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+import SearchBox from '@/components/SearchBox.vue'
+
+const keyword = ref('')
 
 const userStore = useUserStore()
 const { nickname } = storeToRefs(userStore)   // 数据用 storeToRefs（第二课学的）
@@ -11,12 +15,21 @@ const cartStore = useCartStore()
 
 
 const router = useRouter()
+const route = useRoute()
 
 function logout() {
   userStore.logout()       // 数据怎么清由 store 说了算
   router.push('/')         // 页面跳转是自己的事，留在组件里
 }
-
+function doSearch(kw) {
+  // 已在结果页：replace 不留搜索历史；从别的页面进来：push 保留「返回上一页」的路径
+  const target = { path: '/search', query: { keyword: kw } }
+  if (route.path === '/search') {
+    router.replace(target)
+  } else {
+    router.push(target)
+  }
+}
 </script>
 
 <template>
@@ -45,10 +58,8 @@ function logout() {
       </nav>
 
       <!-- 搜索框 -->
-      <div class="search">
-        <input type="text" placeholder="搜索商品" />
-        <button>搜索</button>
-      </div>
+      <SearchBox v-model="keyword" @search="doSearch" />
+
 
       <!-- 购物车入口：徽标实时显示 cart store 的商品总数 -->
       <router-link class="cart" to="/cart">
@@ -90,35 +101,6 @@ function logout() {
   color:var(--text-color);
   text-decoration:none;
 }
-.search{
-  display:flex;
-  border: 1px solid #ddd;
-  border-radius:20px;
-  overflow:hidden;
-}
-.search input{
-    border:none;
-    outline:none;
-    padding:8px 16px;
-    flex:1;
-  }
-.search button{
-  border:none;
-  outline:none;
-  margin:4px;              /* 与容器内壁留缝，胶囊才能浮起来 */
-  border-radius:16px;      /* 胶囊形状，和购物车呼应 */
-  background:#fff6e6;      /* 品牌色浅色调背景，和购物车呼应 */
-  color:var(--brand-color);
-  font-weight:bold;
-  padding:4px 16px;        /* 原 8px 上下，扣掉 4px margin 后总高不变 */
-  cursor:pointer;
-  transition:all 0.3s;
-}
-.search button:hover{
-  background:var(--brand-color);
-  color:#fff;
-}
-
 .cart{
   margin-left:auto;
   display:flex;

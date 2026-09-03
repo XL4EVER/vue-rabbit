@@ -3,6 +3,7 @@
 // 而是按 method + url 查表返回假数据 —— 拦截器、剥壳等链路全部真实走通。
 // 换真实后端时：删掉 request.js 里的 adapter 配置、改一下 baseURL 即可。
 import users from '@/mock/users.json'
+import goods from '@/mock/goods.json'
 
 // 假接口路由表
 const mockRoutes = [
@@ -18,8 +19,22 @@ const mockRoutes = [
       if (!user) return { code: 0, message: '账号或密码错误' }
       // 真实项目的 token 由后端签发，这里用固定格式模拟
       return { code: 1, data: { token: `mock-token-${user.id}`, nickname: user.nickname } }
+    },   
+  },
+  {
+    method: 'GET',
+    url: '/api/search',
+    handler(config) {
+      const keyword = (config.params?.keyword || '').trim()
+      if (!keyword) return { code: 1, data: [] }   // 空关键词直接返回空数组
+      // 名字或品牌包含关键词即命中
+      const list = goods.filter(
+        (g) => g.name.includes(keyword) || g.brand.includes(keyword)
+      )
+      return { code: 1, data: list }
     }
   }
+
 ]
 
 // 把业务数据包成 axios 认识的响应对象（记得带上 config）

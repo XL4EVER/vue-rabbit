@@ -11,7 +11,9 @@ const router = createRouter({
         { path: 'category/:id', component: () => import('@/views/Category/index.vue') },
         { path: 'sub-category/:id', component: () => import('@/views/SubCategory/index.vue') },
         { path: 'detail/:id', component: () => import('@/views/Detail/index.vue') },
-        { path: 'cart', component: () => import('@/views/Cart/index.vue'), meta: { requiresAuth: true } }
+        { path: 'cart', component: () => import('@/views/Cart/index.vue'), meta: { requiresAuth: true } },
+        { path: 'search', component: () => import('@/views/Search/index.vue') }
+
       ]
     },
     {
