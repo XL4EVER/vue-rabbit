@@ -110,13 +110,32 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
   ——讲课结论要实测验证；.header 写死 60px 高度溢出（border 贯穿主行）；
   body 默认 8px margin 因工具条变灰而现形（旧 bug 现形）
 
-**下次继续（阶段 5）**：
-- Pinia 购物车：cart store 骨架已就位（items/totalCount/totalPrice/addItem 等），
-  详情页「加入购物车」接入真 store、购物车页（列表/数量增减/删除/结算）、
-  页头徽标接真实数量、登录态升级为全局 store（解决组件各自读 storage 的局限）
+### ✅ 阶段 5（已完成）：Pinia 购物车 + 登录态全局化
+
+**功能**：
+- 详情页「加入购物车」接入真 store（展开+覆盖传数据），页头红色徽标实时显示总数
+- 购物车页：空状态（去逛逛）/ 列表（grid 表格）、数量步进（下限 1 禁用）、
+  删除、清空、合计（件数+总价）、去结算占位
+- 购物车持久化：初始化从 localStorage 恢复 + watch 深监听自动存盘（刷新不丢）
+- 登录态升级为全局 user store：登录/退出/路由守卫统一读写 store（单一数据源）
+
+**知识点**：
+- Pinia：defineStore（setup store 写法）、useCartStore 单例、store 的 return 即对外 API
+  （漏 return changeCount 的坑）、action 思想（改数据唯一入口是 store 方法）
+- storeToRefs：解构不丢响应性（数据用 storeToRefs、方法直接拿）
+- watch 监听器（vs computed 对比：算值 vs 做事）、deep: true 监听嵌套修改
+- 持久化：内存状态 vs localStorage、手写持久化两步法 vs pinia-plugin-persistedstate 插件
+- 替换式修改要「加新+删旧」（router 双份守卫教训）、过时注释比没注释更害人
+- 按钮两档设计语言（导航工具档浅底 vs 主操作档实底）——视觉层级意识
+- 排错实录：eslint 双配置并存（eslint.config.js 生效、.eslintrc.cjs 是僵尸文件），
+  配置改了不生效先确认生效的是哪个文件
+
+**下次继续（阶段 6）**：
+- 搜索功能：搜索接口 + 防抖 + 结果页
+- 结算流程：去结算按钮落地（订单确认占位）
+- 购物车增强：全选/单选、合计按选中计算
 
 **遗留事项**（择日处理）：
-- lint 7 个历史报错（index.vue 多词命名 + .eslintrc.cjs no-undef），需改 eslint 配置
 - 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
 - 全局样式大重置（* margin/padding/box-sizing）需全站过一遍视觉
 
@@ -166,3 +185,11 @@ git log --oneline  # 查看提交历史
 > 全局前置守卫 beforeEach 结合 meta 元信息实现登录状态守卫，未登录访问受
 > 保护页面时重定向到登录页，同时用 query 参数记录来路，登录成功后跳回原
 > 页面，形成完整闭环。
+>
+> 状态管理方面，使用 Pinia 管理购物车与登录态：商品加入购物车时展开商品数据并
+> 携带数量写入 store，页头徽标通过 computed 总数实时联动；购物车页使用
+> storeToRefs 保持解构后的响应性，数量变更、删除、清空等操作统一封装为
+> store 的 action，保证修改逻辑单一入口；并通过 watch 深监听实现购物车
+> 数据自动持久化到 localStorage，刷新不丢失。登录态同样收敛为全局 user
+> store，路由守卫与页头统一读写同一数据源。此外排查修复了 ESLint 双配置
+> 并存的历史问题（旧版 .eslintrc 与新版 flat config 同时存在，只有后者生效）。
