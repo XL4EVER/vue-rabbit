@@ -5,7 +5,7 @@
     <div class="card">
       <h3>收货地址</h3>
       <p class="tip">地址管理功能开发中，暂用默认地址演示</p>
-      <p class="addr">{{ nickname }} · 广东省广州市天河区 · 138****8888</p>
+      <p class="addr">{{ nickname }} · 华农华山区教一大树下 · 520****1314</p>
     </div>
 
     <div class="card">
@@ -35,6 +35,8 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
+import { createOrderApi } from '@/apis/order'
+
 
 const router = useRouter()
 const cartStore = useCartStore()
@@ -44,16 +46,24 @@ const { selectedItems, selectedTotal } = storeToRefs(cartStore)  // 结算只关
 
 const submitting = ref(false)   // 防重复提交（阶段 4 登录页同款）
 
-function submitOrder() {
+async function submitOrder() {
   submitting.value = true
-  // 模拟下单请求：真实项目里这里是 POST /api/orders，后端返回成功后再清购物车
-  setTimeout(() => {
-    cartStore.removeChecked()   // 已购商品从购物车移除，徽标自动减少
+  try {
+    // 请求体只带后端需要的字段：商品摘要 + 合计
+    const order = await createOrderApi({
+      items: selectedItems.value.map((i) => ({ id: i.id, name: i.name, price: i.price, count: i.count })),
+      total: selectedTotal.value
+    })
+    cartStore.removeChecked()   // 下单成功才清购物车——失败清了用户商品就没了
+    alert(`下单成功！订单号：${order.id}`)
+    router.replace('/')
+  } catch (msg) {
+    alert(msg)   // 「请先登录」等错误文案
+  } finally {
     submitting.value = false
-    alert('下单成功！')
-    router.replace('/')         // replace：返回键不该再回到已下单的结算页
-  }, 800)
+  }
 }
+
 </script>
 
 <style scoped>

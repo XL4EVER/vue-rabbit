@@ -54,7 +54,8 @@ function onSearch(kw) {
         <div class="user">
           <router-link v-if="!nickname" to="/login">请先登录</router-link>          
           <template v-else>
-            <span>你好，{{ nickname }}</span>
+            <span>你好 ! {{ nickname }} </span>
+            <router-link to="/orders">我的订单</router-link>
             <a class="logout" @click="logout">退出</a>
           </template>
         </div>

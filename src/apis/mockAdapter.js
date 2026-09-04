@@ -4,6 +4,8 @@
 // 换真实后端时：删掉 request.js 里的 adapter 配置、改一下 baseURL 即可。
 import users from '@/mock/users.json'
 import goods from '@/mock/goods.json'
+// 订单「数据库」：模块级内存数组。切换页面不丢，整页刷新会清空（真实项目在后端）
+const orders = []
 
 // 假接口路由表
 const mockRoutes = [
@@ -23,17 +25,53 @@ const mockRoutes = [
   },
   {
     method: 'GET',
-    url: '/api/search',
+    url: '/api/goods',
     handler(config) {
-      const keyword = (config.params?.keyword || '').trim()
-      if (!keyword) return { code: 1, data: [] }   // 空关键词直接返回空数组
-      // 名字或品牌包含关键词即命中
-      const list = goods.filter(
-        (g) => g.name.includes(keyword) || g.brand.includes(keyword)
-      )
-      return { code: 1, data: list }
+      const { categoryId, id } = config.params || {}
+      // 老接口迁移：getGoodsById / getGoodsByCategory 统一走这一个端点
+      // 用 query 参数区分（假服务器是精确字符串匹配，支持 /:id 要写路径解析器，得不偿失）
+      if (id) {
+        return { code: 1, data: goods.find((g) => g.id === Number(id)) }  // find 不到返回 undefined，详情页已有兜底
+      }
+      if (categoryId) {
+        return { code: 1, data: goods.filter((g) => g.categoryId === Number(categoryId)) }
+      }
+      return { code: 1, data: goods }
     }
-  }
+  },
+
+  {
+    method: 'POST',
+    url: '/api/orders',
+    handler(config) {
+      // 真实后端下单必须鉴权：token 由请求拦截器自动带上（阶段 4 的资产）
+      if (!config.headers?.get('Authorization')) {
+        return { code: 0, message: '请先登录' }
+      }
+      const data = typeof config.data === 'string' ? JSON.parse(config.data) : config.data
+      // 订单号：时间戳 + 随机尾数（真实项目由后端生成，规则更严谨）
+      const order = {
+        id: 'DD' + Date.now() + Math.floor(Math.random() * 100),
+        createdAt: new Date().toLocaleString('zh-CN'),
+        items: data.items,
+        total: data.total,
+        status: '待发货'
+      }
+      orders.push(order)   // 落库（内存）
+      return { code: 1, data: order }
+    }
+  },
+  {
+    method: 'GET',
+    url: '/api/orders',
+    handler(config) {
+      // 和下单一同款鉴权；真实后端还会按用户过滤订单，mock 简化成全部返回
+      if (!config.headers?.get('Authorization')) {
+        return { code: 0, message: '请先登录' }
+      }
+      return { code: 1, data: orders }
+    }
+  },
 
 ]
 
