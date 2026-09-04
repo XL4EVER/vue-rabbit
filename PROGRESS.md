@@ -177,10 +177,29 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
   （函数声明被 hoisting 提升，语法合法 lint 不报警——lint 保底语法，
   逻辑接线要靠点一遍流程验收）
 
-**下次继续（阶段 8）**：
-- 下单 mock 接口：POST /api/orders 走 request 链路（替换结算页的 setTimeout）
-- 老接口迁移：getGoodsByCategory / getGoodsById 改走 request（换真后端前统一）
-- 订单列表页（我的订单）：下单落库 + 展示
+### ✅ 阶段 8（已完成）：订单模块 + 接口统一
+
+**功能**：
+- 下单 mock 接口：POST /api/orders（结算页 setTimeout 假提交换成真链路）、
+  mock 鉴权（读 Authorization 头）、内存「数据库」（模块级数组，刷新清空）
+- 订单列表页（我的订单）：页头入口、v-for 嵌套渲染（订单+商品两层）、
+  空状态兜底、requiresAuth 复用
+- 老接口迁移：getGoodsByCategory / getGoodsById 改走 request 链路，
+  商品接口合并为一个端点 GET /api/goods（query 参数区分）、
+  goods.json 只在假服务器 import（单一数据源）、函数签名不变页面零改动
+
+**知识点**：
+- 接口契约思维：请求体只传后端需要的字段（商品摘要+合计）
+- mock 鉴权：假服务器第一次「有安全意识」，token 由拦截器自动带、后端校验
+- 内存数据库局限：模块级数组，切换页面不丢、F5 清空（真实项目在后端）
+- removeChecked 只在请求成功后调用（失败清购物车用户商品就丢了）
+- mock 精确匹配查表 vs 路径参数 /goods/:id 的取舍（query 参数折衷）
+- 接口层的价值兑现：阶段 2 分层伏笔——换实现不动页面
+
+**下次继续（阶段 9）**：
+- 404 页面与路由兜底（pathMatch 捕获所有未匹配路径）
+- 部署上线（GitHub Pages / Vercel，简历可写「已部署」）
+- 遗留事项：可爱字体自托管、全局样式大重置
 
 **遗留事项**（择日处理）：
 - 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
@@ -256,3 +275,12 @@ git log --oneline  # 查看提交历史
 > 后通过 action 清理已购商品并用 router.replace 返回首页，避免历史记录
 > 残留已提交的结算页；兼容性方面使用空值合并运算符（??）为 localStorage
 > 中的旧版购物车数据补齐新增字段，保证持久化数据平滑升级。
+>
+> 订单模块将下单与查询统一接入 axios 请求链路：POST 创建订单（请求体按
+> 接口契约只传商品摘要与合计，token 由拦截器自动携带，mock 层校验
+> Authorization 模拟后端鉴权），GET 查询订单列表；订单页通过 v-for 嵌套
+> 渲染订单与商品两层数据，路由复用登录守卫。同时对项目早期手写 Promise
+> 模拟的旧接口进行迁移，统一改走 axios 实例（商品接口合并为一个资源端点，
+> 通过 query 参数区分查询类型），函数签名保持不变、调用方页面零改动，
+> 体现接口层隔离实现的价值；mock 数据从此只出现在假服务器一层，遵循
+> 单一数据源原则。
