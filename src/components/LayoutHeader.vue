@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import SearchBox from '@/components/SearchBox.vue'
+import debounce from '@/utils/debounce'
 
 const keyword = ref('')
 
@@ -30,6 +31,19 @@ function doSearch(kw) {
     router.push(target)
   }
 }
+const autoSearch = debounce(doSearch, 500)
+
+function onKeywordChange(val) {
+  keyword.value = val                        // v-model 的赋值逻辑挪到这里
+  if (!keyword.value.trim()) return          // 清空输入不触发搜索
+  autoSearch(keyword.value.trim())
+}
+
+function onSearch(kw) {
+  autoSearch.cancel()   // 用户已经决定搜了，排队的自动搜作废，避免重复请求
+  doSearch(kw)
+}
+
 </script>
 
 <template>
@@ -58,7 +72,8 @@ function doSearch(kw) {
       </nav>
 
       <!-- 搜索框 -->
-      <SearchBox v-model="keyword" @search="doSearch" />
+      <SearchBox :modelValue="keyword" @update:modelValue="onKeywordChange" @search="onSearch" />
+
 
 
       <!-- 购物车入口：徽标实时显示 cart store 的商品总数 -->
