@@ -155,10 +155,32 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
   goDetail 贴进 fetchResults 的花括号错位（lint no-unused-vars 兜底）；
   函数写好了忘了挂到模板（no-unused-vars 再兜底）
 
-**下次继续（阶段 7）**：
-- 结算流程：去结算按钮落地（订单确认占位）
-- 购物车增强：全选/单选、合计按选中计算
-- 老接口迁移：getGoodsByCategory / getGoodsById 改走 request（换真后端时一起做）
+### ✅ 阶段 7（已完成）：购物车增强 + 结算流程
+
+**功能**：
+- 全选/单选：checked 字段入 store（?? 兜底老数据）、allChecked 可写计算属性（get/set）；
+  全选视觉只有全部选中才亮对勾（半选保持白底空框，按需求去掉 indeterminate）
+- 合计口径切换：页脚合计/件数按选中商品计算（selectedCount/selectedTotal/selectedItems）
+- 去结算落地：结算页（收货地址占位 / 选中商品清单 / 合计 / 提交订单）、
+  复用 requiresAuth 守卫、未勾选时按钮禁用
+- 下单流程：模拟提交 → removeChecked 清已购商品 → 回首页（replace 不留结算页历史）、
+  页头徽标自动联动减少
+
+**知识点**：
+- 可写计算属性 computed({ get, set })：v-model 的第三种搭档（原生 input / 组件 / computed）
+- ?? 空值合并 vs ||：持久化老数据补字段（版本兼容思维）
+- :checked + @change 受控写法：改数据唯一入口是 store 方法，不直接 v-model 改 store 数据
+- 跨页面共享数据不用传参：结算页直接读 store（全局单例的红利）
+- 下单后清理：removeChecked action；replace 阻止返回键回到已下单的结算页
+- 排错实录：多文件改动最容易漏接线——事件没挂 @click（按钮点了没反应）、
+  return 漏导出新 action（阶段 5 同款坑第三次出现）、函数贴到 return 之后
+  （函数声明被 hoisting 提升，语法合法 lint 不报警——lint 保底语法，
+  逻辑接线要靠点一遍流程验收）
+
+**下次继续（阶段 8）**：
+- 下单 mock 接口：POST /api/orders 走 request 链路（替换结算页的 setTimeout）
+- 老接口迁移：getGoodsByCategory / getGoodsById 改走 request（换真后端前统一）
+- 订单列表页（我的订单）：下单落库 + 展示
 
 **遗留事项**（择日处理）：
 - 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
@@ -226,3 +248,11 @@ git log --oneline  # 查看提交历史
 > 页头改词、刷新恢复三种入口行为一致；输入框通过手写 debounce 工具实现
 > 防抖自动搜索（闭包管理定时器，附带 cancel 取消机制），回车与点击立即
 > 搜索并先取消排队中的自动请求，避免重复网络请求。
+>
+> 购物车与结算模块通过可写计算属性（computed get/set）实现全选联动，
+> 单选采用 :checked + @change 的受控写法，保证修改数据的唯一入口是 store
+> 的 action；合计与商品清单按选中口径计算，结算页直接读取全局 store 的
+> 选中数据实现跨页面共享，无需路由传参；结算路由复用登录守卫，下单成功
+> 后通过 action 清理已购商品并用 router.replace 返回首页，避免历史记录
+> 残留已提交的结算页；兼容性方面使用空值合并运算符（??）为 localStorage
+> 中的旧版购物车数据补齐新增字段，保证持久化数据平滑升级。
