@@ -130,21 +130,35 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
 - 排错实录：eslint 双配置并存（eslint.config.js 生效、.eslintrc.cjs 是僵尸文件），
   配置改了不生效先确认生效的是哪个文件
 
-### 🔄 阶段 6（进行中）：搜索功能
+### ✅ 阶段 6（已完成）：搜索功能
 
-**已完成（前半）**：
+**功能**：
 - 搜索 Mock 接口（GET /api/search，name/brand 模糊匹配，空关键词兜底）+ searchGoods 走 axios 链路
-- SearchBox 组件抽取（组件 v-model = :modelValue + @update:modelValue，受控组件）
-- 页头接入：单搜索框方案（结果页不放框），已在结果页时 replace / 其他页面 push
-- 结果页：URL 是唯一入口（watch route.query + immediate 替代 onMounted）——
-  同路由跳转组件复用不重建的坑，页头改词搜索不生效的 bug 由此修复
+- SearchBox 组件抽取：组件 v-model 手写展开（:modelValue + @update:modelValue），受控组件
+- 单搜索框方案：页头是全局唯一搜索入口（结果页不放框），
+  已在结果页时 replace（不留搜索历史）/ 其他页面 push（保留返回路径）
+- 结果页：URL 是唯一入口（watch route.query + immediate 替代 onMounted）、
+  四态渲染（搜索中/没输词/没找到/结果网格）、GoodsCard 复用
+- 输入防抖：手写 debounce 工具（闭包 + cancel 取消排队），停顿 500ms 自动搜，
+  回车/点击立即搜且不重复请求
 
-**下次继续（阶段 6 后半）**：
-- 防抖：手写 debounce 工具（utils/debounce.js）+ 页头接入
-  （输入停顿 500ms 自动搜 + onSearch 先 cancel 排队中的自动搜）
+**知识点**：
+- 组件上的 v-model 是语法糖（:modelValue + @update:modelValue）、受控组件模式；
+  v-model 与 @update:modelValue 不能重复监听（用前者就别再写后者）
+- 同路由跳转组件复用不重建 → onMounted 不重复执行 → watch 路由参数修复
+  （经典面试题「同路由不同 query 跳转组件为什么不更新」）+ immediate 选项
+- 数据流收敛：URL 是唯一真相，页头改 URL、页面听 URL（单一数据源再升级，
+  两个搜索框曾经靠它自动同步）
+- 防抖 debounce vs 节流 throttle（面试必考）、闭包管理 timer、
+  函数也是对象（可挂 cancel 方法）、clearTimeout 取消排队的执行
+- 排错实录：页头改词搜索不生效（组件复用 + 页面不监听 URL）；
+  goDetail 贴进 fetchResults 的花括号错位（lint no-unused-vars 兜底）；
+  函数写好了忘了挂到模板（no-unused-vars 再兜底）
+
+**下次继续（阶段 7）**：
 - 结算流程：去结算按钮落地（订单确认占位）
 - 购物车增强：全选/单选、合计按选中计算
-- PROGRESS.md 本阶段内容补写 + 提交（本文件未提交）
+- 老接口迁移：getGoodsByCategory / getGoodsById 改走 request（换真后端时一起做）
 
 **遗留事项**（择日处理）：
 - 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
@@ -204,3 +218,11 @@ git log --oneline  # 查看提交历史
 > 数据自动持久化到 localStorage，刷新不丢失。登录态同样收敛为全局 user
 > store，路由守卫与页头统一读写同一数据源。此外排查修复了 ESLint 双配置
 > 并存的历史问题（旧版 .eslintrc 与新版 flat config 同时存在，只有后者生效）。
+>
+> 搜索模块通过组件 v-model 的手写展开（:modelValue + @update:modelValue）
+> 实现受控 SearchBox 组件，页头作为全局唯一搜索入口；搜索词通过 URL query
+> 传递，结果页用 watch 监听路由参数（immediate 选项）驱动请求——解决同一
+> 路由跳转时组件复用不重建、onMounted 不重复执行的问题，保证直接输 URL、
+> 页头改词、刷新恢复三种入口行为一致；输入框通过手写 debounce 工具实现
+> 防抖自动搜索（闭包管理定时器，附带 cancel 取消机制），回车与点击立即
+> 搜索并先取消排队中的自动请求，避免重复网络请求。
