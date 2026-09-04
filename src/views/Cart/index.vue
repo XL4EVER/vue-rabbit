@@ -8,13 +8,16 @@
       <router-link to="/">去逛逛</router-link>
     </div>
 
-    <!-- 有货状态 -->
+        <!-- 有货状态 -->
     <template v-else>
       <div class="cart-table">
         <div class="cart-head">
-          <span>商品信息</span><span>单价</span><span>数量</span><span>小计</span><span>操作</span>
+          <span></span><span>商品信息</span><span>单价</span><span>数量</span><span>小计</span><span>操作</span>
         </div>
         <div v-for="item in items" :key="item.id" class="cart-row">
+          <div class="check-cell">
+            <input type="checkbox" :checked="item.checked" @change="toggleCheck(item.id)" />
+          </div>
           <div class="goods">
             <span class="goods-icon">{{ item.icon }}</span>
             <span class="goods-name">{{ item.name }}</span>
@@ -31,22 +34,31 @@
       </div>
 
       <div class="cart-footer">
-        <span>共 <b>{{ totalCount }}</b> 件，合计：<b class="total">¥{{ totalPrice }}</b></span>
+        <label class="check-all">
+          <input type="checkbox" v-model="allChecked" />
+          全选
+        </label>
+        <span>已选 <b>{{ selectedCount }}</b> 件，合计：<b class="total">¥{{ selectedTotal }}</b></span>
         <button class="clear-btn" @click="clear">清空购物车</button>
-        <!-- 结算流程后续阶段再做，先占位 -->
-        <button class="pay-btn">去结算</button>
+        <button class="pay-btn" :disabled="!selectedCount" @click="goCheckout">去结算({{ selectedCount }})</button>
+
       </div>
     </template>
+
   </div>
 </template>
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const cartStore = useCartStore()
-const { items, totalCount, totalPrice } = storeToRefs(cartStore)
-const { changeCount, removeItem, clear } = cartStore
+const { items, allChecked, selectedCount, selectedTotal } = storeToRefs(cartStore)
+const { changeCount, removeItem, clear, toggleCheck } = cartStore
+function goCheckout() {
+  router.push('/checkout')
+}
 </script>
 
 <style scoped>
@@ -58,12 +70,6 @@ const { changeCount, removeItem, clear } = cartStore
   background: #fff;
   border-radius: 8px;
   padding: 0 20px;
-}
-.cart-head, .cart-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 80px;  /* 商品信息占两倍宽，操作列固定 80px */
-  align-items: center;
-  gap: 12px;
 }
 .cart-head {
   padding: 14px 0;
@@ -166,6 +172,30 @@ const { changeCount, removeItem, clear } = cartStore
 }
 .empty a:hover {
   opacity: 0.85;
+}
+.cart-head, .cart-row {
+  display: grid;
+  grid-template-columns: 40px 2fr 1fr 1fr 1fr 80px;  /* 最前面加 40px 复选框列 */
+  align-items: center;
+  gap: 12px;
+}
+.check-cell {
+  text-align: center;
+}
+.check-cell input, .check-all input {
+  accent-color: var(--brand-color);  /* 原生复选框染成品牌色 */
+  cursor: pointer;
+}
+.check-all {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  cursor: pointer;
+}
+.pay-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 </style>
