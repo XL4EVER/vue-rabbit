@@ -130,10 +130,21 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
 - 排错实录：eslint 双配置并存（eslint.config.js 生效、.eslintrc.cjs 是僵尸文件），
   配置改了不生效先确认生效的是哪个文件
 
-**下次继续（阶段 6）**：
-- 搜索功能：搜索接口 + 防抖 + 结果页
+### 🔄 阶段 6（进行中）：搜索功能
+
+**已完成（前半）**：
+- 搜索 Mock 接口（GET /api/search，name/brand 模糊匹配，空关键词兜底）+ searchGoods 走 axios 链路
+- SearchBox 组件抽取（组件 v-model = :modelValue + @update:modelValue，受控组件）
+- 页头接入：单搜索框方案（结果页不放框），已在结果页时 replace / 其他页面 push
+- 结果页：URL 是唯一入口（watch route.query + immediate 替代 onMounted）——
+  同路由跳转组件复用不重建的坑，页头改词搜索不生效的 bug 由此修复
+
+**下次继续（阶段 6 后半）**：
+- 防抖：手写 debounce 工具（utils/debounce.js）+ 页头接入
+  （输入停顿 500ms 自动搜 + onSearch 先 cancel 排队中的自动搜）
 - 结算流程：去结算按钮落地（订单确认占位）
 - 购物车增强：全选/单选、合计按选中计算
+- PROGRESS.md 本阶段内容补写 + 提交（本文件未提交）
 
 **遗留事项**（择日处理）：
 - 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
