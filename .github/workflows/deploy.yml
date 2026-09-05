@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+# 推送到 main 就自动构建部署（CI/CD：push 即上线）
+on:
+  push:
+    branches: [main]
+
+# Pages 部署需要的最小权限（contents 只读、pages 可写、id-token 供无密码认证）
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      # SPA 深链接兜底：404.html 小抄（和本地 deploy 脚本同一招，现在挪到 CI 里做）
+      - run: node -e "require('fs').copyFileSync('dist/index.html','dist/404.html')"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build # 构建成功才部署
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
