@@ -205,11 +205,53 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
 - 可爱字体自托管（阿里妈妈方圆体/站酷快乐体，@font-face + woff2）
 - 全局样式大重置（* margin/padding/box-sizing）需全站过一遍视觉
 
+### ✅ 阶段 9（已完成）：404 兜底 + 部署上线 + 遗留打磨
+
+**功能**：
+- 404 页面 + 路由兜底：NotFound 页面（大号 404 + 文案 + 回首页按钮）、
+  catch-all 路由 `/:pathMatch(.*)*`（必须放路由表最后，它连根路径都会吞）
+- GitHub Pages 部署配置：vite base 子路径、deploy 脚本
+  （构建 → 复制 index.html 为 404.html → gh-pages 推 gh-pages 分支）
+- 遗留打磨：卓特自由体自托管（ttf→woff2 压缩 60%，@font-face 只挂 logo，
+  logo 放大到 40px）、全局样式大重置（* margin/padding/box-sizing +
+  a/ul/button/input 默认样式清零）
+
+**知识点**：
+- vue-router 5.3 兜底路由只有经典写法 `/:pathMatch(.*)*` 可用
+  （新语法 :()/:()* 不匹配——node 实测过才敢教）
+- 两层 404 分工：服务器层 404.html 负责「把请求交回应用」，
+  应用层 NotFound 路由负责「渲染 404 页面」
+- SPA 深链接刷新原理：静态服务器没有 /cart 这个文件 → 404.html 顶替 →
+  Vue 应用启动 → Router 接管 URL 渲染正确页面
+- base 配置：GitHub Pages 子路径资源前缀，阶段 0 的
+  createWebHistory(BASE_URL) 伏笔今天回收
+- 跨平台脚本意识：npm 脚本里用 node 复制文件而不是 cp（Windows cmd 没 cp）
+- @font-face：woff2 格式、font-display: swap 防 FOIT（文字先隐身问题）、
+  自托管 vs 系统字体（Mac 没有幼圆）/外链 CDN 的取舍
+- 字体字重坑：字体只有 400 一个字重时写 font-weight: bold →
+  浏览器合成加粗，笔画糊掉看不清
+- 字体版权意识：公开仓库打包字体必须免费可商用（卓特自由体 ✓）
+- 全局重置：* 选择器特异性为 0，组件里任何样式都能压过它；
+  真正受影响的是「靠浏览器默认值、组件没写」的元素，重置后要全站过一遍
+
+**排错实录**：
+- 部署推送失败：github.com:443 连不上（网络问题）——构建和 404.html
+  复制都成功了，只剩推送一步，网络好了重跑 `npm run deploy` 即可
+- 手动删 font-family 那一行时误删整个 .logo 样式块 → logo 变默认小字
+- logo 加粗后「粗到看不清字」→ 卓特自由体仅 400 字重，bold 触发合成加粗
+
+**下次继续（阶段 10）**：
+- 网络好了之后：`npm run deploy` 推 gh-pages 分支 → GitHub 仓库
+  Settings → Pages → 选 gh-pages 分支 → 访问 https://xl4ever.github.io/vue-rabbit/
+- git push 待办：阶段 8、9 共 4 个提交还积压在本机
+- goods.json 品牌数据更新（自己改的，未决定是否提交）
+- 后续方向备选：商品分页/排序、收货地址管理、订单状态流转、接真实后端
+
 ## 常用命令速查
 
 ```bash
 npm run dev        # 启动开发服务器（每次打开 VSCode 第一件事！VSCode 重启会杀掉终端）
-git add .          # 暂存改动
+git add <文件>     # 暂存指定文件（⚠ 禁止 git add .：会把 users.json 个人数据卷进去）
 git commit -m "feat: xxx"   # 提交（feat=新功能 fix=修bug docs=文档 chore=杂项）
 git push           # 推送到 GitHub
 git status         # 查看当前状态
@@ -284,3 +326,15 @@ git log --oneline  # 查看提交历史
 > 通过 query 参数区分查询类型），函数签名保持不变、调用方页面零改动，
 > 体现接口层隔离实现的价值；mock 数据从此只出现在假服务器一层，遵循
 > 单一数据源原则。
+>
+> 项目收尾阶段补齐了 404 兜底与上线链路：通过 catch-all 路由
+> （/:pathMatch(.*)*，置于路由表末尾）捕获所有未定义路径并渲染 NotFound
+> 页面；部署采用 GitHub Pages，通过 Vite base 配置适配子路径部署，利用
+> 404.html 兜底技巧解决 history 模式下深链接刷新 404 的问题（静态服务器
+> 对未知路径返回 404.html，应用启动后由 Router 接管解析）。视觉打磨方面，
+> 将 logo 字体改为自托管方案：@font-face 引入免费可商用的卓特自由体
+> （ttf 转 woff2 减小体积），配合 font-display: swap 避免字体加载期间
+> 文字消失（FOIT），并注意到单一字重字体写 bold 会触发浏览器合成加粗、
+> 笔画模糊的细节；同时完成全局样式大重置（margin/padding/box-sizing 与
+> a/ul/button 等默认样式清零），利用 * 选择器特异性为 0 的特性保证组件
+> 样式天然覆盖，重置后全站视觉回归一遍。
