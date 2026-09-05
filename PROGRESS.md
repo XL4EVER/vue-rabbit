@@ -247,6 +247,10 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
   内容是 404.html（=index.html），浏览器照常启动应用、Router 接管
 - 手动删 font-family 那一行时误删整个 .logo 样式块 → logo 变默认小字
 - logo 加粗后「粗到看不清字」→ 卓特自由体仅 400 字重，bold 触发合成加粗
+- 线上登录报「账号或密码错误」→ mock 数据随构建打包分发，本地改了
+  users.json 没提交，线上跑的还是旧账号；提交后 push 触发 Actions
+  自动部署即修复。查产物时发现 Terser 会把字符串引号压缩成反引号
+  （grep `"admin"` 匹配不到，`admin` 才行）
 
 **下次继续（阶段 10）**：
 - goods.json 品牌数据更新（自己改的，未决定是否提交）
