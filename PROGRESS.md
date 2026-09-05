@@ -210,8 +210,9 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
 **功能**：
 - 404 页面 + 路由兜底：NotFound 页面（大号 404 + 文案 + 回首页按钮）、
   catch-all 路由 `/:pathMatch(.*)*`（必须放路由表最后，它连根路径都会吞）
-- GitHub Pages 部署配置：vite base 子路径、deploy 脚本
-  （构建 → 复制 index.html 为 404.html → gh-pages 推 gh-pages 分支）
+- 部署上线（已上线 https://xl4ever.github.io/vue-rabbit/）：vite base 子路径、
+  GitHub Actions 自动部署（push main → 云端构建 → 发布 Pages）、
+  404.html 小抄兜底深链接（构建后复制 index.html）
 - 遗留打磨：卓特自由体自托管（ttf→woff2 压缩 60%，@font-face 只挂 logo，
   logo 放大到 40px）、全局样式大重置（* margin/padding/box-sizing +
   a/ul/button/input 默认样式清零）
@@ -233,19 +234,25 @@ Vue 3（组合式 API）+ Vite + Vue Router + Pinia + axios
 - 字体版权意识：公开仓库打包字体必须免费可商用（卓特自由体 ✓）
 - 全局重置：* 选择器特异性为 0，组件里任何样式都能压过它；
   真正受影响的是「靠浏览器默认值、组件没写」的元素，重置后要全站过一遍
+- CI/CD：push 即上线——构建放 GitHub 服务器，不再依赖本机网络；
+  手动 deploy 脚本（gh-pages 包）与 Actions 方案的取舍
 
 **排错实录**：
-- 部署推送失败：github.com:443 连不上（网络问题）——构建和 404.html
-  复制都成功了，只剩推送一步，网络好了重跑 `npm run deploy` 即可
+- 部署推送反复失败：github.com:443 连不上（网络问题）——挂 30 秒间隔的
+  自动重试，第三次成功
+- Pages 设置页 Save 按钮在「gh-pages 分支 + root」组合下变灰（网络波动
+  导致分支校验请求失败）——换 GitHub Actions 部署绕开分支选择器，
+  顺便升级成 push 即上线
+- GitHub Pages 深链接返回 HTTP 404 状态码属预期：服务器给 404 状态但
+  内容是 404.html（=index.html），浏览器照常启动应用、Router 接管
 - 手动删 font-family 那一行时误删整个 .logo 样式块 → logo 变默认小字
 - logo 加粗后「粗到看不清字」→ 卓特自由体仅 400 字重，bold 触发合成加粗
 
 **下次继续（阶段 10）**：
-- 网络好了之后：`npm run deploy` 推 gh-pages 分支 → GitHub 仓库
-  Settings → Pages → 选 gh-pages 分支 → 访问 https://xl4ever.github.io/vue-rabbit/
-- git push 待办：阶段 8、9 共 4 个提交还积压在本机
 - goods.json 品牌数据更新（自己改的，未决定是否提交）
 - 后续方向备选：商品分页/排序、收货地址管理、订单状态流转、接真实后端
+- 可选清理：gh-pages 分支与 npm run deploy 脚本（Actions 已接管，
+  留着当手动备用也行）
 
 ## 常用命令速查
 
@@ -337,4 +344,6 @@ git log --oneline  # 查看提交历史
 > 文字消失（FOIT），并注意到单一字重字体写 bold 会触发浏览器合成加粗、
 > 笔画模糊的细节；同时完成全局样式大重置（margin/padding/box-sizing 与
 > a/ul/button 等默认样式清零），利用 * 选择器特异性为 0 的特性保证组件
-> 样式天然覆盖，重置后全站视觉回归一遍。
+> 样式天然覆盖，重置后全站视觉回归一遍。部署链路采用 GitHub Actions
+> 流水线：push 到 main 自动在云端构建（构建 + 复制 404.html 兜底 +
+> 发布 Pages），实现 push 即上线的自动化发布，手动脚本方案保留为备选。
