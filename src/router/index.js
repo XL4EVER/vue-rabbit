@@ -22,6 +22,11 @@ const router = createRouter({
     {
       path: '/login',
       component: () => import('@/views/Login/index.vue')
+    },
+    {
+      // 兜底：匹配所有未定义的路径（必须放最后——路由按顺序匹配，且它能吞根路径）
+      path: '/:pathMatch(.*)*',
+      component: () => import('@/views/NotFound/index.vue')
     }
   ]
 })
