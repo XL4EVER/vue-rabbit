@@ -1,0 +1,1 @@
+import{t as e}from"./request-CwCdwBn_.js";var t=t=>e.post(`/orders`,t),n=()=>e.get(`/orders`);export{n,t};

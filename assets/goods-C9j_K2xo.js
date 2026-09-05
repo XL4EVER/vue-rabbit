@@ -1,0 +1,1 @@
+import{t as e}from"./request-CwCdwBn_.js";function t(t){return e.get(`/goods`,{params:{categoryId:t}})}function n(t){return e.get(`/goods`,{params:{id:t}})}function r(t){return e.get(`/search`,{params:{keyword:t}})}export{n,r,t};
