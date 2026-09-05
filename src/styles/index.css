@@ -1,8 +1,41 @@
+/* 字体自托管：卓特自由体（免费可商用），logo 专用 */
+@font-face {
+  font-family: '卓特自由体';   /* CSS 里用的名字，和下面 logo 的 font-family 对上即可 */
+  src: url('@/assets/fonts/zhuote.woff2') format('woff2');
+  font-weight: normal;
+  font-display: swap;          /* 先用后备字体顶，加载完再换，文字不消失 */
+}
+
 :root {
   --brand-color: #ce8703;
   --text-color: #696363;
   --border-color: #ddd;
 }
-body {
+
+/* ========== 全局样式大重置 ========== */
+/* 浏览器默认样式各家不一：body 自带 8px 外边距、ul 带缩进、a 带蓝字下划线……
+   统一清零，再交给各组件自己定义，跨浏览器才一致 */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* width 算上 padding 和 border，写死尺寸不会溢出 */
+}
+body {
+  color: var(--text-color);
+}
+a {
+  text-decoration: none;
+  color: inherit; /* 跟文字颜色走，组件想改色自己设 */
+}
+ul, ol {
+  list-style: none; /* 圆点/序号都去掉 */
+}
+button, input {
+  font-family: inherit; /* 表单控件历史上不继承字体，手动补 */
+  border: none;
+  outline: none;
+}
+img {
+  max-width: 100%;
+  display: block;
 }

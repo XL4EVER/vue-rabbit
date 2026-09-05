@@ -102,11 +102,10 @@ function onSearch(kw) {
     gap:40px;
 }
 .logo{
-  font-size:34px;
-  font-weight: bold;
-  color:var(--brand-color);
-  font-family:'YouYuan','幼圆','Microsoft YaHei',sans-serif;  /* 新增这行 */
-  text-shadow:0 0 1px var(--brand-color); 
+  font-size:40px;              /* 从 34px 放大，logo 更醒目 */
+  color:var(--brand-color);    /* 橙色保持不变 */
+  /* 不写 font-weight：卓特自由体只有 400 一个字重，写 bold 会触发浏览器合成加粗，笔画糊掉 */
+  font-family:'卓特自由体','YouYuan','Microsoft YaHei',sans-serif; /* 自托管字体优先，回退栈兜底 */
 }
 .nav{
   display:flex;
